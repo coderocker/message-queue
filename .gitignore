@@ -1,0 +1,132 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# IntelliJ IDEA files
+.idea/
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# Maven files
+target/
+
+# Lombok generated files
+.delombok/
+
+# Compiled bytecode
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Dependency directories #
+.idea/
+.ideaLibraries/
+out/
+
+# Local configuration file (if you have a gradle.properties file, it should not be checked in)
+gradle.properties
+
+# Eclipse
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Gradle
+.gradle/
+/build/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# JetBrains
+.idea/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.suo
+*.sdf
+*.dbmdl
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows Installer XML (WiX) files
+*.wixproj
+*.wixobj
+*.wixpdb
+*.wixoutput
+
+# Tye
+.tye/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+*.dbmdl
+*.sqlite
+*.sqlite3
+*.sdb
+*.db
+*.mdf
+*.ldf
+*.ndf
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# JetBrains Rider
+.idea/
+*.sl
