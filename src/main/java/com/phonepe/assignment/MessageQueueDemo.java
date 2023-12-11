@@ -23,10 +23,16 @@ public class MessageQueueDemo {
     publisher.publish(new JsonPayload(jsonString));
     publisher.publish(new JsonPayload(jsonString));
     publisher.publish(new JsonPayload(jsonString));
-    Subscriber subscriber = new MessageSubscriber("First Subscriber");
-    Subscriber subscriber1 = new MessageSubscriber("Second Subscriber", List.of("(?i)(?s).*\"city\".*"));
-    messageQueue.subscribe(subscriber);
+
+    Subscriber subscriber = new MessageSubscriber("First");
+    Subscriber subscriber1 = new MessageSubscriber("Second", List.of("(?i)(?s).*\"city\".*"));
+
+    subscriber1.addDependent(subscriber);
     messageQueue.subscribe(subscriber1);
+
+
+
+//    messageQueue.subscribe(subscriber1);
 
     ContinuesJsonPublisher continuesJsonPublisherThread = new ContinuesJsonPublisher(3);
     new Thread(continuesJsonPublisherThread).start();

@@ -2,6 +2,7 @@ package com.phonepe.assignment.subscriber;
 
 import com.phonepe.assignment.exception.MessageProcessorException;
 import com.phonepe.assignment.model.Message;
+import com.phonepe.assignment.queue.MessageQueue;
 import com.phonepe.assignment.service.JsonMessageProcessor;
 import com.phonepe.assignment.service.MessageProcessor;
 import com.phonepe.assignment.utils.Logger;
@@ -11,6 +12,7 @@ import java.util.*;
 
 public class MessageSubscriber implements Subscriber {
   private static final Logger logger = SimpleLogger.getInstance(MessageSubscriber.class);
+  private static final MessageQueue messageQueue = MessageQueue.getInstance();
   private final String name;
   private final String id;
   private List<String> processPatterns;
@@ -74,10 +76,12 @@ public class MessageSubscriber implements Subscriber {
 
   @Override
   public void addDependent(Subscriber subscriber) {
-    if(!subscriber.getDependents().contains(this))  {
+    if(!subscriber.equals(this) && !subscriber.getDependents().contains(this))  {
+      logger.info("Added %s subscriber as a dependent to %s subscriber", subscriber.getName(), getName());
       dependents.add(subscriber);
+      messageQueue.subscribe(subscriber);
     } else {
-      logger.warn("Unable to add a cyclic dependent %s for Subscriber %s", subscriber.getName(), this.getName());
+      logger.warn("Unable to add self as a dependent or cyclic dependent %s subscriber for Subscriber %s", subscriber.getName(), this.getName());
     }
   }
 
@@ -99,14 +103,18 @@ public class MessageSubscriber implements Subscriber {
   @Override
   public boolean canProcess(String messageId) {
     if(dependents.isEmpty()) {
+      logger.info("%s subscriber checking canProcess and found no dependents", getName());
       return true;
     }
 
     for(Subscriber dependent: dependents) {
+      logger.info("%s subscriber checking canProcess for dependent subscriber", getName(), dependent.getName());
       if(!dependent.isMessageProcessed(messageId)) {
+        logger.warn("%s subscriber checking canProcess but dependent %s did not processed message yet so got negative response", getName(), dependent.getName());
         return false;
       }
     }
+    logger.info("%s subscriber checked canProcess and get positive response as all dependent already processed this message", getName());
     return true;
   }
 

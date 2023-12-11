@@ -147,9 +147,12 @@ public class MessageQueue implements CustomQueue {
 
   // Register a subscriber with a callback
   public synchronized void subscribe(Subscriber subscriber) {
-    subscribers.add(subscriber);
+    if(!subscribers.contains(subscriber)) {
+      subscribers.add(subscriber);
+    }
     notifyConsumers();
   }
+
 
   public Message getMessage(int index) {
     return messages.get(index);
