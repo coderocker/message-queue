@@ -18,6 +18,7 @@ public interface Subscriber {
   void addDependent(Subscriber subscriber);
   Set<String> getProcessedMessageIds();
   boolean isMessageProcessed(String id);
+  void removeProcessedMessage(String id);
   List<Subscriber> getDependents();
   boolean canProcess(String messageId);
 }

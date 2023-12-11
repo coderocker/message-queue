@@ -7,13 +7,17 @@ import com.github.javafaker.Faker;
 import com.phonepe.assignment.model.payload.JsonPayload;
 import com.phonepe.assignment.publisher.MessagePublisher;
 import com.phonepe.assignment.publisher.Publisher;
+import com.phonepe.assignment.queue.MessageQueue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class ContinuesJsonPublisher implements Runnable{
+  private final static Logger logger = SimpleLogger.getInstance(ContinuesJsonPublisher.class);
   private final static Faker faker = new Faker();
+  private static int messageCounter = 0;
+  private final MessageQueue messageQueue = MessageQueue.getInstance();
   private final List<Publisher<JsonNode>> publishers = new ArrayList<>();
   private final Random random;
 
@@ -56,10 +60,23 @@ public class ContinuesJsonPublisher implements Runnable{
       String jsonString = generateRandomJson();
 
       try {
+        if(messageCounter >= 200) {
+          messageQueue.setMaxCapacity(messageQueue.size() + 200);
+          messageCounter = 0;
+        }
+        if(messageQueue.size() >= 200) {
+          logger.info("Braking loop with %s", messageQueue.size());
+          break;
+        }
+        logger.info("Published %s messages", messageCounter);
+        messageCounter++;
         publishers.get(randomIndex).publish(new JsonPayload(jsonString));
 
         // Sleep for a short duration before publishing the next message
-        Thread.sleep(10000);
+//        Thread.sleep(10000);
+
+
+
 
       } catch (Exception e) {
         e.printStackTrace();

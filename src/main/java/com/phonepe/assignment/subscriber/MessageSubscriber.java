@@ -96,6 +96,11 @@ public class MessageSubscriber implements Subscriber {
   }
 
   @Override
+  public void removeProcessedMessage(String id) {
+    processedMessageIds.remove(id);
+  }
+
+  @Override
   public List<Subscriber> getDependents() {
     return dependents;
   }
@@ -143,9 +148,7 @@ public class MessageSubscriber implements Subscriber {
         logger.info("Subscriber %s unable to matched any of provided pattern %s for below message %n%s", getName(), patterns, message.getPayload().toString());
       }
     }
-
-
-
+    messageQueue.incrementProcessedMessageCount();
     currentOffset ++;
   }
   private boolean isMatching(Message message) {

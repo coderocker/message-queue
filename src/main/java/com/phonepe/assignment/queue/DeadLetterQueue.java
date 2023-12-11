@@ -67,4 +67,9 @@ public class DeadLetterQueue implements CustomQueue{
       this.dequeue();
     }
   }
+
+  @Override
+  public int getProcessedMessageCount() {
+    return 0;
+  }
 }

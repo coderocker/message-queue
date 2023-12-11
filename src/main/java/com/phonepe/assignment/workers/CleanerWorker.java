@@ -28,6 +28,7 @@ public class CleanerWorker implements Runnable {
   public void run() {
     synchronized (lock) {
       // Check and remove expired messages
+      logger.info("Processed total %s message from queue %s", customQueue.getProcessedMessageCount(), customQueue.getClass().getSimpleName());
       logger.info("Cleaner worker is removing messages from %s", customQueue.getClass().getSimpleName());
       customQueue.removeExpiredMessages();
     }

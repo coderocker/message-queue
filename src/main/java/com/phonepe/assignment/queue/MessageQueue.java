@@ -21,10 +21,12 @@ public class MessageQueue implements CustomQueue {
 
   private static MessageQueue instance;
   private static final int maxRetries = 3;
+  private int processedMessagesCount = 0;
+
   private final DeadLetterQueue deadLetterQueue = DeadLetterQueue.getInstance();
   private final static Logger logger = SimpleLogger.getInstance(MessageQueue.class);
   private final LinkedList<Message> messages = new LinkedList<>();
-  private final Duration ttl = Duration.ofSeconds(30);
+  private final Duration ttl = Duration.ofMinutes(30);
   private final List<Subscriber> subscribers = new ArrayList<>();
   private final Map<String, SubscriberWorker> subscriberWorkers = new HashMap<>();
   private final CleanerWorker cleanerWorker;
@@ -56,6 +58,10 @@ public class MessageQueue implements CustomQueue {
     return instance;
   }
 
+  public void setMaxCapacity(int maxCapacity) {
+    this.maxCapacity = maxCapacity;
+  }
+
   public static synchronized MessageQueue getInstance(int maxCapacity) {
     if (instance == null) {
       instance = new MessageQueue(maxCapacity);
@@ -80,7 +86,7 @@ public class MessageQueue implements CustomQueue {
     try {
       while (size() == maxCapacity && !Thread.currentThread().isInterrupted()) {
         try {
-          logger.warn("Message Queue is full, bellow message with message id %s is waiting to be enqueued %n%s", message.getId(), message.getPayload().toString());
+          logger.warn("Message Queue is full, bellow message with message id %s is waiting to be enqueued %n%s", message.getId());
           notEmptySignal.await(1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
@@ -118,7 +124,6 @@ public class MessageQueue implements CustomQueue {
         if(subscriber.getCurrentOffset() >= size()) {
           subscriber.setCurrentOffset(size()-1);
         }
-
       }
       return message;
     } finally {
@@ -141,12 +146,21 @@ public class MessageQueue implements CustomQueue {
     return messages.isEmpty();
   }
 
+  @Override
+  public int getProcessedMessageCount() {
+    return processedMessagesCount;
+  }
+
+  public void incrementProcessedMessageCount() {
+    processedMessagesCount++;
+  }
+
   public List<Subscriber> getSubscribers() {
     return subscribers;
   }
 
   // Register a subscriber with a callback
-  public synchronized void subscribe(Subscriber subscriber) {
+  public void subscribe(Subscriber subscriber) {
     if(!subscribers.contains(subscriber)) {
       subscribers.add(subscriber);
     }
@@ -163,7 +177,12 @@ public class MessageQueue implements CustomQueue {
     Message message = this.peek();
     if (message != null && message.isExpired(ttl)) {
       logger.info("Message with id %s is expired%n%s", message.getId(), message.getPayload().toString());
-      this.dequeue();
+      Message deQueuedMessage = this.dequeue();
+      if (deQueuedMessage.equals(message)) {
+        for(Subscriber subscriber: subscribers) {
+          subscriber.removeProcessedMessage(message.getId());
+        }
+      }
     }
   }
 

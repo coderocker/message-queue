@@ -10,4 +10,5 @@ public interface CustomQueue {
   boolean isEmpty();
   int size();
   void removeExpiredMessages();
+  int getProcessedMessageCount();
 }
