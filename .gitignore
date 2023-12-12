@@ -130,3 +130,4 @@ mono_crash.*
 # JetBrains Rider
 .idea/
 *.sl
+.mvn/
