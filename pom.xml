@@ -90,7 +90,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <!-- Configure compiler options if needed -->
+          <source>17</source>
+          <target>17</target>
         </configuration>
       </plugin>
       <!-- Other plugins and configurations as needed -->
